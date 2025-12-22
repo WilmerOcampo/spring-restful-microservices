@@ -1,4 +1,4 @@
-package com.ocs.restfulweb.user.versioning;
+package com.ocs.restfulweb.person.versioning;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

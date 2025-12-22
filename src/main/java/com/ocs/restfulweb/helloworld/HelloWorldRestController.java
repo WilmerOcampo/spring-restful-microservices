@@ -32,7 +32,7 @@ public class HelloWorldRestController {
         return new HelloWorldBean(String.format("Hello World! %s", name.toUpperCase()));
     }
 
-    @GetMapping("/internationalized")
+    @GetMapping("/internationalized") // Add header Accept-Language (es, en, fr)
     public String helloWorldInternationalized() {
         Locale locale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("good.morning.message", null, "Default Message", locale);

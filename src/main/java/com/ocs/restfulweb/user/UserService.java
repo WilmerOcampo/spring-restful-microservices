@@ -36,10 +36,6 @@ public class UserService {
     }
 
     public void deleteById(int id) {
-        /*return users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .orElse(null);*/
         users.removeIf(u -> u.getId().equals(id));
     }
 }
