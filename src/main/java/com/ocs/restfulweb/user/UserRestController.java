@@ -3,6 +3,9 @@ package com.ocs.restfulweb.user;
 import com.ocs.restfulweb.exception.NotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,12 +26,16 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable int id) {
+    public EntityModel<User> findById(@PathVariable int id) throws NoSuchMethodException {
         User user = userService.findById(id);
         if (user == null) {
             throw new NotFoundException(String.format("User %s not found", id));
         }
-        return user;
+
+        Link linkTo = WebMvcLinkBuilder.linkTo(UserRestController.class).withRel("self");
+        Link linkToUsers = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserRestController.class).getUsers()).withRel("users");
+
+        return EntityModel.of(user, linkTo, linkToUsers);
     }
 
     @PostMapping
