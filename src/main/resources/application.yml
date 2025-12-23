@@ -1,3 +1,11 @@
 spring:
   application:
     name: restful-web-services
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*" # Not recommendable for production
+
