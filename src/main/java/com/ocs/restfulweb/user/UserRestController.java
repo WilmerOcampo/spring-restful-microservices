@@ -31,11 +31,10 @@ public class UserRestController {
         if (user == null) {
             throw new NotFoundException(String.format("User %s not found", id));
         }
-
-        Link linkTo = WebMvcLinkBuilder.linkTo(UserRestController.class).withRel("self");
+        //Link linkTo = WebMvcLinkBuilder.linkTo(UserRestController.class).withRel("self");
         Link linkToUsers = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserRestController.class).getUsers()).withRel("users");
-
-        return EntityModel.of(user, linkTo, linkToUsers);
+        //return EntityModel.of(user, linkTo, linkToUsers);
+        return EntityModel.of(user, linkToUsers);
     }
 
     @PostMapping
@@ -46,7 +45,8 @@ public class UserRestController {
                 .path("/{id}")
                 .buildAndExpand(saveUser.getId())
                 .toUri();
-        return ResponseEntity.created(location).build();
+        //return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(saveUser);
     }
 
     @DeleteMapping("/{id}")
