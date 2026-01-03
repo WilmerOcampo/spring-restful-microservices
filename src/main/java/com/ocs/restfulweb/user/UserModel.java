@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-public class User {
+public class UserModel {
 
     private Integer id;
     @Size(min = 2, message = "Name must be longer than 2 characters")

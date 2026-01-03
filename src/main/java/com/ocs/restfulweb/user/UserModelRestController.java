@@ -14,32 +14,32 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/model/users")
 @RequiredArgsConstructor
-public class UserRestController {
+public class UserModelRestController {
 
-    private final UserService userService;
+    private final UserModelService userService;
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserModel> getUsers() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public EntityModel<User> findById(@PathVariable int id) throws NoSuchMethodException {
-        User user = userService.findById(id);
+    public EntityModel<UserModel> findById(@PathVariable int id) throws NoSuchMethodException {
+        UserModel user = userService.findById(id);
         if (user == null) {
             throw new NotFoundException(String.format("User %s not found", id));
         }
         //Link linkTo = WebMvcLinkBuilder.linkTo(UserRestController.class).withRel("self");
-        Link linkToUsers = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserRestController.class).getUsers()).withRel("users");
+        Link linkToUsers = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserModelRestController.class).getUsers()).withRel("users");
         //return EntityModel.of(user, linkTo, linkToUsers);
         return EntityModel.of(user, linkToUsers);
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User saveUser = userService.save(user);
+    public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {
+        UserModel saveUser = userService.save(user);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

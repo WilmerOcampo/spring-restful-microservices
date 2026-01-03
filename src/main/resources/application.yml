@@ -2,6 +2,18 @@ spring:
   application:
     name: restful-web-services
 
+  datasource:
+    url: jdbc:h2:mem:test_db
+    #http://localhost:****/h2-console
+
+  jpa:
+    defer-datasource-initialization: true #For execute data.sql
+
+logging:
+  level:
+    org:
+      springframework: info
+
 management:
   endpoints:
     web:
