@@ -1,6 +1,7 @@
 package com.ocs.restfulweb.user.persistence;
 
 import com.ocs.restfulweb.exception.NotFoundException;
+import com.ocs.restfulweb.post.Post;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
@@ -41,5 +42,10 @@ public class UserService {
 
     private static @NonNull NotFoundException notFoundException(int id) {
         return new NotFoundException(String.format("User %s not found", id));
+    }
+
+    public List<Post> retrieveUserPosts(int id) {
+        User user = findById(id);
+        return user.getPosts();
     }
 }

@@ -8,6 +8,7 @@ spring:
 
   jpa:
     defer-datasource-initialization: true #For execute data.sql
+    show-sql: true
 
 logging:
   level:

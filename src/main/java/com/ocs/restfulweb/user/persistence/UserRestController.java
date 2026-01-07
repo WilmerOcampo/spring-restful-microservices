@@ -1,5 +1,6 @@
 package com.ocs.restfulweb.user.persistence;
 
+import com.ocs.restfulweb.post.Post;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -77,5 +78,10 @@ public class UserRestController {
     public ResponseEntity<Void> deleteUser(@PathVariable int id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/posts")
+    public ResponseEntity<List<Post>> retrieveUserPosts(@PathVariable int id) {
+        return ResponseEntity.ok(userService.retrieveUserPosts(id));
     }
 }
