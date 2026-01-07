@@ -23,31 +23,39 @@ public class UserRestController {
 
     private final UserService userService;
 
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.findAll();
+    private static void addLinks(User user, Integer id) {
+        user.add(linkTo(methodOn(UserRestController.class).findById(id)).withSelfRel());
+        user.add(linkTo(methodOn(UserRestController.class).getUsers()).withRel("users"));
+    }
+
+    private static void extractedUser(Iterable<User> users) {
         users.forEach(user -> {
             if (user.getId() != null) {
                 addLinks(user, user.getId());
             }
         });
+    }
+
+    private static @NonNull URI getLocation(Object objectId) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(objectId)
+                .toUri();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers() {
+        List<User> users = userService.findAll();
+        extractedUser(users);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping(value = "/page")
     public ResponseEntity<Page<User>> getUsersPage(@ParameterObject Pageable pageable) {
         Page<User> users = userService.findAll(pageable);
-        users.forEach(user -> {
-            if (user.getId() != null) {
-                addLinks(user, user.getId());
-            }
-        });
+        extractedUser(users);
         return ResponseEntity.ok(users);
-    }
-
-    private static void addLinks(User user, Integer id) {
-        user.add(linkTo(methodOn(UserRestController.class).findById(id)).withSelfRel());
-        user.add(linkTo(methodOn(UserRestController.class).getUsers()).withRel("users"));
     }
 
     @GetMapping("/{id}")
@@ -63,14 +71,6 @@ public class UserRestController {
         addLinks(savedUser, savedUser.getId());
         URI location = getLocation(savedUser.getId());
         return ResponseEntity.created(location).body(savedUser);
-    }
-
-    private static @NonNull URI getLocation(Object objectId) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(objectId)
-                .toUri();
     }
 
     @DeleteMapping("/{id}")
