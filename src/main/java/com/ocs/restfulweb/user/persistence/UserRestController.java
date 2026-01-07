@@ -84,4 +84,11 @@ public class UserRestController {
     public ResponseEntity<List<Post>> retrieveUserPosts(@PathVariable int id) {
         return ResponseEntity.ok(userService.retrieveUserPosts(id));
     }
+
+    @PostMapping("/{id}/post")
+    public ResponseEntity<Post> createPost(@PathVariable int id, @Valid @RequestBody Post post) {
+        Post savedPost = userService.createUserPost(id, post);
+        URI location = getLocation(savedPost.getId());
+        return ResponseEntity.created(location).body(savedPost);
+    }
 }
