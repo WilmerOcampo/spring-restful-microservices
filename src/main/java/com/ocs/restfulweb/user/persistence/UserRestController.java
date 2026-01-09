@@ -1,48 +1,45 @@
 package com.ocs.restfulweb.user.persistence;
 
 import com.ocs.restfulweb.post.Post;
+import com.ocs.restfulweb.util.LinkUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/rest/users")
 @RequiredArgsConstructor
 public class UserRestController {
 
     private final UserService userService;
 
-    private static void addLinks(User user, Integer id) {
+    private static void addLinks(User user, int id) {
         user.add(linkTo(methodOn(UserRestController.class).findById(id)).withSelfRel());
-        user.add(linkTo(methodOn(UserRestController.class).getUsers()).withRel("users"));
+        user.add(linkTo(methodOn(UserRestController.class).retrieveUserPosts(id)).withRel("posts"));
+    }
+
+    private static void addLinksForPost(Post post, int id) {
+        post.add(linkTo(methodOn(UserRestController.class).retrieveUserPost(id, post.getUuid())).withSelfRel());
+        post.add(linkTo(methodOn(UserRestController.class).retrieveUserPosts(id)).withRel("posts"));
     }
 
     private static void extractedUser(Iterable<User> users) {
         users.forEach(user -> {
-            if (user.getId() != null) {
+            if (user != null && user.getId() != null) {
                 addLinks(user, user.getId());
             }
         });
-    }
-
-    private static @NonNull URI getLocation(Object objectId) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(objectId)
-                .toUri();
     }
 
     @GetMapping
@@ -70,7 +67,7 @@ public class UserRestController {
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User savedUser = userService.save(user);
         addLinks(savedUser, savedUser.getId());
-        URI location = getLocation(savedUser.getId());
+        URI location = LinkUtils.buildLocation(savedUser.getId());
         return ResponseEntity.created(location).body(savedUser);
     }
 
@@ -86,9 +83,18 @@ public class UserRestController {
     }
 
     @PostMapping("/{id}/post")
-    public ResponseEntity<Post> createPost(@PathVariable int id, @Valid @RequestBody Post post) {
-        Post savedPost = userService.createUserPost(id, post);
-        URI location = getLocation(savedPost.getId());
-        return ResponseEntity.created(location).body(savedPost);
+    public ResponseEntity<Post> createPost(@PathVariable int id, @Valid @RequestBody Post request) {
+        Post post = userService.createUserPost(id, request);
+        addLinksForPost(post, id);
+        URI location = LinkUtils.buildLocation(post.getUuid());
+        return ResponseEntity.created(location).body(post);
     }
+
+    @GetMapping("/{id}/post/{uuid}")
+    public ResponseEntity<Post> retrieveUserPost(@PathVariable int id, @PathVariable UUID uuid) {
+        Post post = userService.findPostByUuid(id, uuid);
+        addLinksForPost(post, id);
+        return ResponseEntity.ok(post);
+    }
+
 }

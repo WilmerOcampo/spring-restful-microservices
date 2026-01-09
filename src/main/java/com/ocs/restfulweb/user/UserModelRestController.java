@@ -1,6 +1,7 @@
 package com.ocs.restfulweb.user;
 
 import com.ocs.restfulweb.exception.NotFoundException;
+import com.ocs.restfulweb.util.LinkUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -8,7 +9,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -40,11 +40,7 @@ public class UserModelRestController {
     @PostMapping
     public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {
         UserModel saveUser = userService.save(user);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(saveUser.getId())
-                .toUri();
+        URI location = LinkUtils.buildLocation(saveUser.getId());
         //return ResponseEntity.created(location).build();
         return ResponseEntity.created(location).body(saveUser);
     }

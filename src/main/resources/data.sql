@@ -20,7 +20,7 @@ values ('Wilmer Ocampo', '1999-03-27'),
        ('Alberto Rios', '1979-12-29'),
        ('Camila Flores', '2000-06-07');
 
-INSERT INTO posts(id, description, user_id)
+INSERT INTO posts(uuid, description, user_id)
 VALUES ('9f1e2d3c-4b5a-6c7d-8e9f-0123456789ab', 'Primer post de bienvenida', 1),
        ('a1b2c3d4-e5f6-7a8b-9c0d-1234567890ab', 'Compartiendo una actualización', 2),
        ('b2c3d4e5-f6a7-8b9c-0d1e-234567890abc', 'Foto del día', 1),

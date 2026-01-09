@@ -6,17 +6,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.UUID;
 
 @Entity(name = "posts")
 @Getter
 @Setter
-public class Post {
+public class Post extends RepresentationModel<Post> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID uuid;
 
     @Size(min = 10)
     private String description;
