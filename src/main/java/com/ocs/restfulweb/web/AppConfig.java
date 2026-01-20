@@ -1,4 +1,4 @@
-package com.ocs.restfulweb;
+package com.ocs.restfulweb.web;
 
 import org.springframework.context.annotation.Configuration;
 

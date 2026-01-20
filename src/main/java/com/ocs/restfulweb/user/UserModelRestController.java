@@ -40,7 +40,7 @@ public class UserModelRestController {
     @PostMapping
     public ResponseEntity<UserModel> createUser(@Valid @RequestBody UserModel user) {
         UserModel saveUser = userService.save(user);
-        URI location = LinkUtils.buildLocation(saveUser.getId());
+        URI location = LinkUtils.buildCreatedLocation(saveUser.getId());
         //return ResponseEntity.created(location).build();
         return ResponseEntity.created(location).body(saveUser);
     }

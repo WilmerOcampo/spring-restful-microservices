@@ -1,10 +1,12 @@
 package com.ocs.restfulweb.user.persistence;
 
 import com.ocs.restfulweb.exception.NotFoundException;
-import com.ocs.restfulweb.post.PostJpaRepository;
 import com.ocs.restfulweb.post.Post;
+import com.ocs.restfulweb.post.PostJpaRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -16,35 +18,35 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserPostRepository userPostRepository;
+    private final UserJpaRepository userJpaRepository;
     private final PostJpaRepository postJpaRepository;
 
     public List<User> findAll() {
-        return userPostRepository.findAll();
+        return userJpaRepository.findAll();
     }
 
     public Page<User> findAll(Pageable pageable) {
-        return userPostRepository.findAll(pageable);
+        return userJpaRepository.findAll(pageable);
     }
 
     public User save(User user) {
-        return userPostRepository.save(user);
+        return userJpaRepository.save(user);
     }
 
     public User findById(int id) {
-        return userPostRepository.findById(id)
-                .orElseThrow(() -> notFoundException(id));
+        return userJpaRepository.findById(id)
+                .orElseThrow(UserService::userNotFound);
+    }
+
+    private static NotFoundException userNotFound() {
+        return new NotFoundException("User not found");
     }
 
     public void deleteById(int id) {
-        if (!userPostRepository.existsById(id)) {
-            throw notFoundException(id);
+        if (!userJpaRepository.existsById(id)) {
+            throw userNotFound();
         }
-        userPostRepository.deleteById(id);
-    }
-
-    private static @NonNull NotFoundException notFoundException(Object objectId) {
-        return new NotFoundException(String.format("User %s not found", objectId));
+        userJpaRepository.deleteById(id);
     }
 
     public List<Post> retrieveUserPosts(int id) {
@@ -60,7 +62,26 @@ public class UserService {
 
     public Post findPostByUuid(int userId, UUID postId) {
         return postJpaRepository.findByUuidAndUserId(postId, userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Post %s not found for User %s", postId, userId)));
+                .orElseThrow(() -> new NotFoundException("Post not found for User"));
     }
 
+    public User update(int id, @Valid User user) {
+        User existing = findById(id);
+        BeanUtils.copyProperties(user, existing, "id");
+        return userJpaRepository.save(existing);
+    }
+
+    public User partialUpdate(@Valid User user, int id) {
+        User existing = findById(id);
+        if (user.getId() != null) {
+            existing.setId(user.getId());
+        }
+        if (user.getName() != null) {
+            existing.setName(user.getName());
+        }
+        if (user.getBirthDate() != null) {
+            existing.setBirthDate(user.getBirthDate());
+        }
+        return userJpaRepository.save(existing);
+    }
 }
