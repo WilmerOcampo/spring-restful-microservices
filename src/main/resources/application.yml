@@ -3,16 +3,27 @@ spring:
     name: restful-web-services
 
   datasource:
-    url: jdbc:h2:mem:test_db
+    #url: jdbc:h2:mem:test_db
     #http://localhost:****/h2-console
+    #Config MySQL
+    url: ${DB_MYSQL_SOCIAL_MEDIA_URL}
+    username: ${DB_MYSQL_USER}
+    password: ${DB_MYSQL_PASS}
 
   jpa:
     defer-datasource-initialization: true #For execute data.sql
     show-sql: true
 
+    # For MySQL
+    hibernate:
+      ddl-auto: update
+      #dialect: org.hibernate.dialect.MySQL8Dialect
+
     properties:
       hibernate:
         format_sql: true
+        # For MySQL
+        dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:
